@@ -89,23 +89,34 @@
 			//Now write it to the local storage
 			localStorage.setItem("jentis.consent.data", sJson);
 		}
-		function showVendors() {
-			console.log(jentis.consent.engine.getVendorFullData()); 
+
+		//Filter Vendors by category and return the result as Objectarray
+		function getVendorsByCat(cat) {
+			var vendorList = {};
+			var jentisVendors = jentis.consent.engine.getVendorFullData();
+			for (var key in jentisVendors) {
+				vendor = jentisVendors[key];
+				if (vendor.category && vendor.category.id === cat) {
+					vendorList[key] = true;
+				}
+			}
+			return vendorList;
 		}
+		
 		//Listen for the accept trigger
 		window.addEventListener('CookiebotOnAccept', function (e) {
 			//Check the Consent category
 			if (Cookiebot.consent.marketing) {
-				console.log("Set marketing");
+				jentis.consent.engine.setNewVendorConsents(getVendorsByCat("marketing"));
 			}
 			if (Cookiebot.consent.statistics) {
-				console.log("Set statistics");
+				jentis.consent.engine.setNewVendorConsents(getVendorsByCat("statistics"));
 			}
 			if (Cookiebot.consent.necessary) {
-				console.log("Set necessary");
+				jentis.consent.engine.setNewVendorConsents(getVendorsByCat("necessary"));
 			}
 			if (Cookiebot.consent.preferences) {
-				console.log("Set preferences");
+				jentis.consent.engine.setNewVendorConsents(getVendorsByCat("preferences"));
 			}
 		}, false);
 
@@ -135,9 +146,6 @@
 	</button>
 	<button onClick="MigrateInTimeConsent();">
 		Do old consent IN TIME
-	</button>
-	<button onClick="showVendors();">
-		Show Vendors
 	</button>
 </body>
 
